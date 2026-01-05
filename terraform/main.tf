@@ -17,6 +17,10 @@ module "catalog_service" {
     cpu_limit = "1"
     memory_limit = "512Mi"
 
+    # Identity
+    service_account_email = google_service_account.catalog_sa.email
+    allow_public_access = false # lock down (only propagator can call it)
+
     # Connect to the VPC
     vpc_connector = module.database.vpc_connector_id
     
@@ -42,6 +46,10 @@ module "propagator_service" {
     cpu_limit = "2"
     memory_limit = "512Mi"
 
+    # Identity
+    service_account_email = google_service_account.propagator_sa.email
+    allow_public_access = true # public for now
+
     vpc_connector = module.database.vpc_connector_id # Needed if it writes results to DB
 
     env_vars = {
@@ -61,6 +69,10 @@ module "spatial_service" {
   
     cpu_limit    = "1"
     memory_limit = "512Mi"
+
+    # Identity
+    service_account_email = google_service_account.spatial_sa.email
+    allow_public_access = true
 
     vpc_connector = module.database.vpc_connector_id
 

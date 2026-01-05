@@ -4,6 +4,8 @@ resource "google_cloud_run_v2_service" "default" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
+    service_account = var.service_account_email
+
     containers {
       image = var.image_url
       
@@ -14,7 +16,6 @@ resource "google_cloud_run_v2_service" "default" {
         }
       }
 
-      # We will use this later for DB connection
       dynamic "env" {
         for_each = var.env_vars
         content {
@@ -34,8 +35,9 @@ resource "google_cloud_run_v2_service" "default" {
 # Allow unauthenticated access (public) for now so we can test easily.
 # We will lock this down in Step 5 (IAM).
 resource "google_cloud_run_service_iam_member" "public_access" {
-  location = google_cloud_run_v2_service.default.location
-  service  = google_cloud_run_v2_service.default.name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
+    count = var.allow_public_access ? 1 : 0 # Only create if public access is allowed
+    location = google_cloud_run_v2_service.default.location
+    service  = google_cloud_run_v2_service.default.name
+    role     = "roles/run.invoker"
+    member   = "allUsers"
 }
