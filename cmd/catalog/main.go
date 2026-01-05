@@ -15,14 +15,14 @@ var db *sql.DB
 func main() {
 	log.Println("Starting Catalog Service...")
 
+	initDB()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello from Catalog Service!")
-	})
+	http.HandleFunc("/", handler)
 
 	log.Printf("Catalog Service listening on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
