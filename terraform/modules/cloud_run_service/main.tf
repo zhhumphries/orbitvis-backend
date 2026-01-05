@@ -23,6 +23,11 @@ resource "google_cloud_run_v2_service" "default" {
         }
       }
     }
+
+    vpc_access {
+        connector = var.vpc_connector
+        egress = "PRIVATE_RANGES_ONLY"
+    }
   }
 }
 

@@ -1,3 +1,10 @@
+# --- Database ---
+module "database" {
+    source = "./modules/database"
+    region = var.region
+    db_password = var.db_password
+}
+
 # --- Catalog Service ---
 module "catalog_service" {
     source = "./modules/cloud_run_service"
@@ -9,6 +16,17 @@ module "catalog_service" {
 
     cpu_limit = "1"
     memory_limit = "512Mi"
+
+    # Connect to the VPC
+    vpc_connector = module.database.vpc_connector_id
+    
+    # Pass DB Connection Info
+    env_vars = {
+        DB_HOST     = module.database.db_private_ip
+        DB_USER     = module.database.db_user
+        DB_PASSWORD = var.db_password
+        DB_NAME     = module.database.db_name
+    }
 }
 
 # --- Propagator Service ---
@@ -24,8 +42,12 @@ module "propagator_service" {
     cpu_limit = "2"
     memory_limit = "512Mi"
 
+    vpc_connector = module.database.vpc_connector_id # Needed if it writes results to DB
+
     env_vars = {
         CATALOG_URL = module.catalog_service.service_url
+        # Propagator also needs DB access eventually
+        DB_HOST     = module.database.db_private_ip
     }
 }
 
@@ -39,6 +61,12 @@ module "spatial_service" {
   
     cpu_limit    = "1"
     memory_limit = "512Mi"
+
+    vpc_connector = module.database.vpc_connector_id
+
+    env_vars = {
+        DB_HOST     = module.database.db_private_ip
+    }
 }
 
 # --- Outputs ---

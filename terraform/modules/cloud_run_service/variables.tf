@@ -7,3 +7,8 @@ variable "env_vars" {
   type    = map(string)
   default = {}
 }
+
+variable "vpc_connector" {
+    description = "The VPC Connector ID for private networking"
+    default = null # Optional, so we don't break things if we omit it
+}

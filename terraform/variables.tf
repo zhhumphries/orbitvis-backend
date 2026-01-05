@@ -11,3 +11,8 @@ variable "repo_name" {
   description = "The Artifact Registry Repo Name"
   default     = "orbitvis-repo"
 }
+
+variable "db_password" {
+    description = "The password for the database user"
+    default = "SuperSecretPassword123!"
+}
