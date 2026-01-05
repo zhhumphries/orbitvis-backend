@@ -78,5 +78,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Hellow from Catalog Service! You've been here %d times.", count)
+	fmt.Fprintf(w, "Hello from Catalog Service! You've been here %d times.", count)
 }
